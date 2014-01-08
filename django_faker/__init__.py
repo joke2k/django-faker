@@ -55,7 +55,7 @@ class Faker(object):
             # initialize with faker.generator.Generator instance
             # and remember in cache
             cls.generators[codename] = FakerGenerator( locale, providers )
-            cls.generators[codename].seed( cls.generators[codename].random_Int() )
+            cls.generators[codename].seed( cls.generators[codename].random_int() )
 
         return cls.generators[codename]
 
