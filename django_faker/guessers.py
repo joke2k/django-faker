@@ -20,7 +20,7 @@ class Name(object):
         if name in ('first_name','firstname'): return lambda x: generator.first_name()
         if name in ('last_name','lastname'): return lambda x: generator.last_name()
 
-        if name in ('username','login','nickname'): return lambda x:generator.name()
+        if name in ('username','login','nickname'): return lambda x:generator.user_name()
         if name in ('email','email_address'): return lambda x:generator.email()
         if name in ('phone_number','phonenumber','phone'): return lambda x:generator.phone_number()
         if name == 'address' : return lambda x:generator.address()
