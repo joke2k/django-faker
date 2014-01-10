@@ -46,7 +46,7 @@ class Action(models.Model):
     name= models.CharField(max_length=4, choices=ACTIONS)
     executed_at= models.DateTimeField()
 
-    actor= models.ForeignKey(Player,related_name='actions', null=True)
+    actor= models.ForeignKey(Player, related_name='actions', null=True)
     target= models.ForeignKey(Player, related_name='enemy_actions+', null=True)
 
 
@@ -83,7 +83,7 @@ class PopulatorTestCase(unittest.TestCase):
 
         populator.addEntity(Game,5)
         populator.addEntity(Player, 10, {
-            'score': lambda x: fake.randomInt(0,1000),
+            'score': lambda x: fake.random_int(0,1000),
             'nickname': lambda x: fake.email()
         })
         populator.addEntity(Action,30)
@@ -110,11 +110,11 @@ class TemplateTagsTestCase(unittest.TestCase):
         self.assertNotEqual(self.render("{% fake 'name' as myname %}{{ myname }}"),"")
 
     def testSimpleFakeTagWithArguments(self):
-        self.assertNotEqual(self.render("{% fake 'dateTimeBetween' '-10d' as mydate %}{{ mydate }}"),"")
+        self.assertNotEqual(self.render("{% fake 'date_time_between' '-10d' as mydate %}{{ mydate }}"),"")
 
     def testSimpleFakeTagFormatterNotFoundRaisesException(self):
         with self.assertRaises(AttributeError):
-            self.render("{% fake 'notFoundedFake' as foo %}")
+            self.render("{% fake 'not_founded_fake' as foo %}")
 
     def testSimpleFakeTagOptionalAssignment(self):
         self.assertNotEqual(self.render("{% fake 'name' %}"),"")
@@ -122,16 +122,16 @@ class TemplateTagsTestCase(unittest.TestCase):
 
     # do_fake_filter: fake
     def testFakeFilterTag(self):
-        self.assertIn(self.render("{{ 'randomElement'|fake:'testString' }}"),'testString')
+        self.assertIn(self.render("{{ 'random_element'|fake:'testString' }}"),'testString')
 
     def testFakeFilterWithValueFromContext(self):
         mylist = [100,200,300]
-        rendered = self.render("{{ 'randomElement'|fake:mylist }}", {'mylist': mylist})
+        rendered = self.render("{{ 'random_element'|fake:mylist }}", {'mylist': mylist})
         self.assertIn(rendered, [unicode(el) for el in mylist])
 
     def testFakeFilterFormatterNotFoundRaisesException(self):
         with self.assertRaises(AttributeError):
-            self.render("{{ 'notFoundedFake'|fake:mylist }}", {'mylist': [100,200,300]})
+            self.render("{{ 'not_founded_fake'|fake:mylist }}", {'mylist': [100,200,300]})
 
     def testFakeFilterAsIfCondition(self):
         self.assertEqual(self.render("{% if 'boolean'|fake:100 %}True forever{% endif %}"), "True forever")
@@ -151,20 +151,20 @@ class TemplateTagsTestCase(unittest.TestCase):
     def testFullXmlContact(self):
         self.assertTrue(self.render("""<?xml version="1.0" encoding="UTF-8"?>
 <contacts>
-    {% fake 'randomInt' 10 20 as times %}
+    {% fake 'random_int' 10 20 as times %}
     {% for i in 10|get_range %}
-    <contact firstName="{% fake 'firstName' %}" lastName="{% fake 'lastName' %}" email="{% fake 'email' %}"/>
-        <phone number="{% fake 'phoneNumber' %}"/>
+    <contact first_name="{% fake 'first_name' %}" lastName="{% fake 'last_name' %}" email="{% fake 'email' %}"/>
+        <phone number="{% fake 'phone_number' %}"/>
         {% if 'boolean'|fake:25 %}
-        <birth date="{{ 'dateTimeThisCentury'|fake|date:"D d M Y" }}" place="{% fake 'city' %}"/>
+        <birth date="{{ 'date_time_this_century'|fake|date:"D d M Y" }}" place="{% fake 'city' %}"/>
         {% endif %}
         <address>
-            <street>{% fake 'streetAddress' %}</street>
+            <street>{% fake 'street_address' %}</street>
             <city>{% fake 'city' %}</city>
             <postcode>{% fake 'postcode' %}</postcode>
             <state>{% fake 'state' %}</state>
         </address>
-        <company name="{% fake 'company' %}" catchPhrase="{% fake 'catchPhrase' %}">
+        <company name="{% fake 'company' %}" catchPhrase="{% fake 'catch_phrase' %}">
         {% if 'boolean'|fake:25 %}
             <offer>{% fake 'bs' %}</offer>
         {% endif %}

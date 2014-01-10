@@ -60,7 +60,7 @@ def do_fake( formatter, *args, **kwargs ):
         call a faker format
         uses:
 
-            {% fake "formatterName" *args **kwargs as myvar %}
+            {% fake "formatter_name" *args **kwargs as myvar %}
             {{ myvar }}
 
         or:

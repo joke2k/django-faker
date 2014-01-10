@@ -24,7 +24,7 @@ class FieldTypeGuesser(object):
         if isinstance(field, FloatField): return lambda x: generator.pyfloat()
         if isinstance(field, CharField):
             if field.choices:
-                return lambda x: generator.randomElement(field.choices)[0]
+                return lambda x: generator.random_element(field.choices)[0]
             return lambda x: generator.text(field.max_length) if field.max_length >= 5 else generator.word()
         if isinstance(field, TextField): return lambda x: generator.text()
 
