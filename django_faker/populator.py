@@ -173,7 +173,7 @@ class Populator(object):
         klass = self.entities.keys()
         if not klass:
             raise AttributeError('No class found from entities. Did you add entities to the Populator ?')
-        klass = klass[0]
+        klass = list(klass)[0]
 
         return klass.objects._db
 
