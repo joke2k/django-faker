@@ -9,6 +9,16 @@ from django.template import Template
 
 fake = Faker()
 
+
+class CustomField(models.Field):
+    def db_type(self, connection):
+        return 'text'
+
+
+class ModelWithCustomField(models.Model):
+    custom_field = CustomField()
+
+
 class Game(models.Model):
 
     title= models.CharField(max_length=200)
@@ -52,6 +62,13 @@ class Action(models.Model):
 
 class PopulatorTestCase(unittest.TestCase):
 
+    def testPopulationErrors(self):
+        generator = fake
+        populator = Populator(generator)
+
+        self.assertRaises(AttributeError, populator.addEntity, ModelWithCustomField, 10)
+        self.assertRaises(AttributeError, populator.execute)
+
     def testPopulation(self):
 
         generator = fake
@@ -87,6 +104,9 @@ class PopulatorTestCase(unittest.TestCase):
             'nickname': lambda x: fake.email()
         })
         populator.addEntity(Action,30)
+        populator.addEntity(ModelWithCustomField, 10, {
+            'custom_field': generator.city()
+        })
 
         insertedPks = populator.execute()
 
@@ -94,6 +114,8 @@ class PopulatorTestCase(unittest.TestCase):
         self.assertTrue( len(insertedPks[Player]) == 10 )
 
         self.assertTrue( any([0 <= p.score <= 1000 and '@' in p.nickname for p in Player.objects.all() ]) )
+
+        self.assertTrue( len(insertedPks[ModelWithCustomField]) == 10)
 
 
 class TemplateTagsTestCase(unittest.TestCase):

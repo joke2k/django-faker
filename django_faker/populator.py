@@ -51,9 +51,9 @@ class ModelPopulator(object):
         self.model = model
         self.fieldFormatters = {}
 
-    def guessFieldFormatters(self, generator):
-
-        formatters = {}
+    def guessFieldFormatters(self, generator, formatters=None):
+        if formatters is None:
+            formatters = {}
         model = self.model
         nameGuesser = Name(generator)
         fieldTypeGuesser = FieldTypeGuesser(generator)
@@ -61,6 +61,10 @@ class ModelPopulator(object):
         for field in model._meta.fields:
         #            yield field.name, getattr(self, field.name)
             fieldName = field.name
+
+            if formatters.has_key(fieldName):
+                continue
+
             if isinstance(field, (ForeignKey,ManyToManyField,OneToOneField)):
                 relatedModel = field.rel.to
 
@@ -135,9 +139,7 @@ class Populator(object):
         if not isinstance(model, ModelPopulator):
             model = ModelPopulator(model)
 
-        model.fieldFormatters = model.guessFieldFormatters( self.generator )
-        if customFieldFormatters:
-            model.fieldFormatters.update(customFieldFormatters)
+        model.fieldFormatters = model.guessFieldFormatters(self.generator, formatters=customFieldFormatters)
 
         klass = model.model
         self.entities[klass] = model
