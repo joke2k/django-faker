@@ -1,7 +1,9 @@
 Django-faker
 ============
 
-*Django-faker* uses `PyFaker`_ to generate test data for Django models and templates.
+*Django-faker* uses `fake-factory`_ package to generate test data for Django models and templates.
+
+|pypi| |unix_build| |windows_build| |coverage| |downloads| |license|
 
 How to use
 ----------
@@ -145,4 +147,28 @@ or if you have 'django_faker' in INSTALLED_APPS:
     $ python manage.py test django_faker
 
 
-.. _PyFaker: https://www.github.com/joke2k/faker/
+.. _fake-factory: https://www.github.com/joke2k/faker/
+
+.. |pypi| image:: https://img.shields.io/pypi/v/django-faker.svg?style=flat-square&label=version
+    :target: https://pypi.python.org/pypi/django-faker
+    :alt: Latest version released on PyPi
+
+.. |coverage| image:: https://img.shields.io/coveralls/joke2k/django-faker/master.svg?style=flat-square
+    :target: https://coveralls.io/r/joke2k/django-faker?branch=master
+    :alt: Test coverage
+
+.. |unix_build| image:: https://img.shields.io/travis/joke2k/django-faker/master.svg?style=flat-square&label=unix%20build
+    :target: http://travis-ci.org/joke2k/django-faker
+    :alt: Build status of the master branch on Mac/Linux
+
+.. |windows_build|  image:: https://img.shields.io/appveyor/ci/joke2k/django-faker.svg?style=flat-square&label=windows%20build
+    :target: https://ci.appveyor.com/project/joke2k/django-faker
+    :alt: Build status of the master branch on Windows
+
+.. |downloads| image:: https://img.shields.io/pypi/dm/django-faker.svg?style=flat-square
+    :target: https://pypi.python.org/pypi/django-faker
+    :alt: Monthly downloads
+
+.. |license| image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
+    :target: https://raw.githubusercontent.com/joke2k/django-faker/master/LICENSE.txt
+    :alt: Package license
