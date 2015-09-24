@@ -147,6 +147,27 @@ or if you have 'django_faker' in INSTALLED_APPS:
     $ python manage.py test django_faker
 
 
+Changelog
+---------
+
+`0.3dev <http://github.com/joke2k/django-faker/compare/v0.2...master>`__
+------------------------------------------------------------------------
+
+- ...
+
+`0.2 - 23-January-2013 <http://github.com/joke2k/django-faker/compare/v0.1...v0.2>`__
+-------------------------------------------------------------------------------------
+
+- Add requirements
+- Fake browser preview
+
+0.1 - 01-December-2012
+----------------------
+
+- Add django Model instance generator
+- Add django template tag and filter
+
+
 .. _fake-factory: https://www.github.com/joke2k/faker/
 
 .. |pypi| image:: https://img.shields.io/pypi/v/django-faker.svg?style=flat-square&label=version
