@@ -153,7 +153,7 @@ Changelog
 `0.3dev <http://github.com/joke2k/django-faker/compare/v0.2...master>`__
 ------------------------------------------------------------------------
 
-- ...
+- Upgrade fake-factory version
 
 `0.2 - 23-January-2013 <http://github.com/joke2k/django-faker/compare/v0.1...v0.2>`__
 -------------------------------------------------------------------------------------
