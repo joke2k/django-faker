@@ -1,2 +1,2 @@
 django
-fake-factory==0.5.3
+Faker>=0.7.3
