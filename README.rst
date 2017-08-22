@@ -1,7 +1,7 @@
 Django-faker
 ============
 
-*Django-faker* uses `fake-factory`_ package to generate test data for Django models and templates.
+*Django-faker* uses `Faker`_ package to generate test data for Django models and templates.
 
 |pypi| |unix_build| |windows_build| |coverage| |downloads| |license|
 
@@ -78,7 +78,7 @@ Faker is smart enough to relate the populated `Player` entities to one of popula
 Template tags and filter
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Django-faker offers a useful template tags and filters for interact with `PyFaker`_::
+Django-faker offers a useful template tags and filters for interact with `Faker`_::
 
     {% fake 'name' as myname %}{% fake 'dateTimeBetween' '-10d' as mydate %}
 
@@ -150,10 +150,10 @@ or if you have 'django_faker' in INSTALLED_APPS:
 Changelog
 ---------
 
-`0.3dev <http://github.com/joke2k/django-faker/compare/v0.2...master>`__
+`0.3 <http://github.com/joke2k/django-faker/compare/v0.2...master>`__
 ------------------------------------------------------------------------
 
-- Upgrade fake-factory version
+- Update fake-factory to faker
 
 `0.2 - 23-January-2013 <http://github.com/joke2k/django-faker/compare/v0.1...v0.2>`__
 -------------------------------------------------------------------------------------
@@ -168,7 +168,7 @@ Changelog
 - Add django template tag and filter
 
 
-.. _fake-factory: https://www.github.com/joke2k/faker/
+.. _faker: https://www.github.com/joke2k/faker/
 
 .. |pypi| image:: https://img.shields.io/pypi/v/django-faker.svg?style=flat-square&label=version
     :target: https://pypi.python.org/pypi/django-faker
