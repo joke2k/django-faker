@@ -150,10 +150,11 @@ or if you have 'django_faker' in INSTALLED_APPS:
 Changelog
 ---------
 
-`0.3 <http://github.com/joke2k/django-faker/compare/v0.2...master>`__
+`0.3dev <http://github.com/joke2k/django-faker/compare/v0.2...master>`__
 ------------------------------------------------------------------------
 
-- Update fake-factory to faker
+- Renamed fake-factory to faker
+- Refactoring of tests
 
 `0.2 - 23-January-2013 <http://github.com/joke2k/django-faker/compare/v0.1...v0.2>`__
 -------------------------------------------------------------------------------------
