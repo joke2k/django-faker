@@ -1,2 +1,2 @@
-django
+django==1.11.6
 fake-factory==0.5.3
