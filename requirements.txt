@@ -1,2 +1,2 @@
 django==1.11.6
-fake-factory==0.5.3
+fake-factory==9999.9.9
