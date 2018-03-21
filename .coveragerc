@@ -1,3 +1,2 @@
 [paths]
 source = django_faker/
-omit = django_faker/tests.py

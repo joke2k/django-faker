@@ -1,46 +1,8 @@
-import random
-from django_faker.guessers import Name
-from django.db.models.fields import *
-from django.db.models import ForeignKey, ManyToManyField, OneToOneField, ImageField
-
-
-class FieldTypeGuesser(object):
-
-    def __init__(self, generator):
-        """
-        :param generator: Generator
-        """
-        self.generator = generator
-
-    def guessFormat(self, field):
-
-        generator = self.generator
-        if isinstance(field, BooleanField): return lambda x: generator.boolean()
-        if isinstance(field, NullBooleanField): return lambda x: generator.nullBoolean()
-        if isinstance(field, DecimalField): return lambda x: generator.pydecimal(rightDigits=field.decimal_places)
-        if isinstance(field, SmallIntegerField): return lambda x: generator.randomInt(0,65535)
-        if isinstance(field, IntegerField): return lambda x: generator.randomInt(0,4294967295)
-        if isinstance(field, BigIntegerField): return lambda x: generator.randomInt(0,18446744073709551615)
-        if isinstance(field, FloatField): return lambda x: generator.pyfloat()
-        if isinstance(field, CharField):
-            if field.choices:
-                return lambda x: generator.randomElement(field.choices)[0]
-            return lambda x: generator.text(field.max_length) if field.max_length >= 5 else generator.word()
-        if isinstance(field, TextField): return lambda x: generator.text()
-
-        if isinstance(field, DateTimeField): return lambda x: generator.dateTime()
-        if isinstance(field, DateField): return lambda x: generator.date()
-        if isinstance(field, TimeField): return lambda x: generator.time()
-
-        if isinstance(field, URLField): return lambda x: generator.uri()
-        if isinstance(field, SlugField): return lambda x: generator.slug()
-        if isinstance(field, IPAddressField):
-            protocolIp = generator.randomElements(['ipv4','ipv6'])
-            return lambda x: getattr(generator,protocolIp)()
-        if isinstance(field, EmailField): return lambda x: generator.email()
-        if isinstance(field, ImageField): return lambda x: None
-
-        raise AttributeError(field)
+from django.db.models import AutoField, ManyToManyField
+from django.db.models.fields.reverse_related import ForeignObjectRel
+from .constraints import validate_unique_constraint, validate_unique_together_constraint, \
+    InvalidConstraint
+from .guessers import NameGuesser, RelationGuesser, FieldTypeGuesser
 
 
 class ModelPopulator(object):
@@ -49,68 +11,76 @@ class ModelPopulator(object):
         :param model: Generator
         """
         self.model = model
-        self.fieldFormatters = {}
+        self.field_formatters = {}
 
-    def guessFieldFormatters(self, generator):
-
+    def guess_field_formatters(self, generator):
+        """
+        Figure out how to populate the model's fields given a certain generator
+        :param generator: should be able to create lots of types of fake values
+        :return: a map of field name -> value generation function
+        """
         formatters = {}
         model = self.model
-        nameGuesser = Name(generator)
-        fieldTypeGuesser = FieldTypeGuesser(generator)
 
-        for field in model._meta.fields:
-        #            yield field.name, getattr(self, field.name)
-            fieldName = field.name
-            if isinstance(field, (ForeignKey,ManyToManyField,OneToOneField)):
-                relatedModel = field.rel.to
+        # field guesser order matters - whichever matches first has precedence
+        field_guessers = [
+            NameGuesser(generator),
+            RelationGuesser(generator),
+            FieldTypeGuesser(generator)
+        ]
 
-                def build_relation(inserted):
-                    if relatedModel in inserted and inserted[relatedModel]:
-                        return relatedModel.objects.get(pk=random.choice(inserted[relatedModel]))
-                    if not field.null:
-                        try :
-                            # try to retrieve random object from relatedModel
-                            relatedModel.objects.order_by('?')[0]
-                        except IndexError:
-                            raise Exception('Relation "%s.%s" with "%s" cannot be null, check order of addEntity list' % (
-                                field.model.__name__, field.name, relatedModel.__name__,
-                            ))
-                    return None
-
-                formatters[fieldName] = build_relation
+        for field in model._meta.get_fields():  # pylint: disable=protected-access
+            # Skip auto fields because they'll be generated on insertion
+            if isinstance(field, (AutoField, ForeignObjectRel)):
                 continue
 
-            if isinstance(field, AutoField):
-                continue
+            # attempt to set
+            for guesser in field_guessers:
+                formatter = guesser.guess_format(field)
+                if formatter:
+                    formatters[field.name] = formatter
+                    break
 
-            formatter = nameGuesser.guessFormat(fieldName)
-            if formatter:
-                formatters[fieldName] = formatter
-                continue
-
-            formatter = fieldTypeGuesser.guessFormat(field)
-            if formatter:
-                formatters[fieldName] = formatter
-                continue
+            if not formatters[field.name]:
+                # No formatter set, something weird must've happened
+                raise AttributeError(field)
 
         return formatters
 
-    def execute(self, using, insertedEntities):
-
+    def execute(self, using, inserted_entities):
         obj = self.model()
-
-        for field, format in self.fieldFormatters.items():
-            if format:
-                value = format(insertedEntities) if hasattr(format,'__call__') else format
-                setattr(obj, field, value)
-
-        obj.save(using=using)
-
-        return obj.pk
+        # try up to 1000 times to create an acceptable object
+        # Ideally, we'd generate an acceptable list of unique fields/tuples of unique together fields
+        # But that is harder when dealing with all sorts of generic fields, relational fields, etc
+        # A good future improvement
+        count = 0
+        while count < 1000:
+            many_fields = {}
+            for field, fmt in self.field_formatters.items():
+                if fmt:
+                    value = fmt(inserted_entities) if hasattr(fmt, '__call__') else fmt
+                    if isinstance(self.model._meta.get_field(field),  # pylint: disable=protected-access
+                                  ManyToManyField):
+                        if value:
+                            many_fields[field] = value
+                    else:
+                        setattr(obj, field, value)
+            try:
+                validate_unique_constraint(obj)
+                validate_unique_together_constraint(obj)
+                obj.save(using=using)
+                # set many to many once id is created
+                for field, val in many_fields.items():
+                    getattr(obj, field).set(val)
+                obj.save(using=using)
+                return obj.pk
+            except InvalidConstraint as e:
+                if count == 1000:
+                    raise e
+            count += 1
 
 
 class Populator(object):
-
     def __init__(self, generator):
         """
         :param generator: Generator
@@ -120,8 +90,7 @@ class Populator(object):
         self.quantities = {}
         self.orders = []
 
-
-    def addEntity(self, model, number, customFieldFormatters=None):
+    def add_entity(self, model, number, custom_field_formatters=None):
         """
         Add an order for the generation of $number records for $entity.
 
@@ -129,15 +98,15 @@ class Populator(object):
         :type model: Model
         :param number: int The number of entities to populate
         :type number: integer
-        :param customFieldFormatters: optional dict with field as key and callable as value
-        :type customFieldFormatters: dict or None
+        :param custom_field_formatters: optional dict with field as key and callable as value
+        :type custom_field_formatters: dict or None
         """
         if not isinstance(model, ModelPopulator):
             model = ModelPopulator(model)
 
-        model.fieldFormatters = model.guessFieldFormatters( self.generator )
-        if customFieldFormatters:
-            model.fieldFormatters.update(customFieldFormatters)
+        model.field_formatters = model.guess_field_formatters(self.generator)
+        if custom_field_formatters:
+            model.field_formatters.update(custom_field_formatters)
 
         klass = model.model
         self.entities[klass] = model
@@ -152,19 +121,19 @@ class Populator(object):
         :rtype: A list of the inserted PKs
         """
         if not using:
-            using = self.getConnection()
+            using = self.get_connection()
 
-        insertedEntities = {}
+        inserted_entities = {}
         for klass in self.orders:
             number = self.quantities[klass]
-            if klass not in insertedEntities:
-                insertedEntities[klass] = []
-            for i in range(0,number):
-                    insertedEntities[klass].append( self.entities[klass].execute(using, insertedEntities) )
+            if klass not in inserted_entities:
+                inserted_entities[klass] = []
+            for _ in range(0, number):
+                inserted_entities[klass].append(self.entities[klass].execute(using, inserted_entities))
 
-        return insertedEntities
+        return inserted_entities
 
-    def getConnection(self):
+    def get_connection(self):
         """
         use the first connection available
         :rtype: Connection
@@ -175,7 +144,9 @@ class Populator(object):
             raise AttributeError('No class found from entities. Did you add entities to the Populator ?')
         klass = list(klass)[0]
 
-        return klass.objects._db
+        return klass.objects._db  # pylint: disable=protected-access
 
-
-
+    def clear(self):
+        self.entities = {}
+        self.quantities = {}
+        self.orders = []

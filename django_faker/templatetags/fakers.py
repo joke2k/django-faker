@@ -1,10 +1,12 @@
 from inspect import getargspec
+from django.template.base import TemplateSyntaxError
 from django import template
-from django.template.base import TagHelperNode, TemplateSyntaxError, parse_bits
+from django.template.library import parse_bits
 
 register = template.Library()
 
-from django_faker import Faker
+from django_faker import DjangoFaker
+
 
 def optional_assignment_tag(func=None, takes_context=None, name=None):
     """
@@ -14,7 +16,7 @@ def optional_assignment_tag(func=None, takes_context=None, name=None):
     def dec(func):
         params, varargs, varkw, defaults = getargspec(func)
 
-        class AssignmentNode(TagHelperNode):
+        class AssignmentNode(template.Node):
             def __init__(self, takes_context, args, kwargs, target_var=None):
                 super(AssignmentNode, self).__init__(takes_context, args, kwargs)
                 self.target_var = target_var
@@ -54,8 +56,9 @@ def optional_assignment_tag(func=None, takes_context=None, name=None):
     else:
         raise TemplateSyntaxError("Invalid arguments provided to assignment_tag")
 
+
 @optional_assignment_tag(name='fake')
-def do_fake( formatter, *args, **kwargs ):
+def do_fake(formatter, *args, **kwargs):
     """
         call a faker format
         uses:
@@ -67,33 +70,36 @@ def do_fake( formatter, *args, **kwargs ):
             {% fake 'name' %}
 
         """
-    return Faker.getGenerator().format( formatter, *args, **kwargs )
+    return DjangoFaker.get_generator().format(formatter, *args, **kwargs)
 
 
-#@register.assignment_tag(name='fake')
-#def fake_tag_as( formatter, *args, **kwargs ):
-#    """
-#    call a faker format
-#    uses:
-#
-#        {% fake "formatterName" *args **kwargs as myvar %}
-#
-#    """
-#    return Faker.getGenerator().format( formatter, *args, **kwargs )
+@register.assignment_tag(name='fake')
+def fake_tag_as(formatter, *args, **kwargs):
+    """
+    call a faker format
+    uses:
 
-#@register.simple_tag(name='fakestr')
-#def fake_tag_str( formatter, *args, **kwargs ):
-#    """
-#    call a faker format
-#    uses:
-#
-#        {% fakestr "formatterName" *values **kwargs %}
-#    """
-#    if formatter == 'dateTimeThisCentury' : print args, kwargs
-#    return Faker.getGenerator().format( formatter, *args, **kwargs )
+        {% fake "formatterName" *args **kwargs as myvar %}
+
+    """
+    return DjangoFaker.get_generator().format(formatter, *args, **kwargs)
+
+
+@register.simple_tag(name='fakestr')
+def fake_tag_str(formatter, *args, **kwargs):
+    """
+    call a faker format
+    uses:
+
+        {% fakestr "formatterName" *values **kwargs %}
+    """
+    if formatter == 'dateTimeThisCentury':
+        print args, kwargs
+    return DjangoFaker.get_generator().format(formatter, *args, **kwargs)
+
 
 @register.filter(name='fake')
-def do_fake_filter( formatter, arg=None ):
+def do_fake_filter(formatter, arg=None):
     """
     call a faker format
     uses:
@@ -105,11 +111,11 @@ def do_fake_filter( formatter, arg=None ):
     """
     args = []
     if not arg is None: args.append(arg)
-    return Faker.getGenerator().format( formatter, *args )
+    return DjangoFaker.get_generator().format(formatter, *args)
 
 
 @register.filter(name='or_fake')
-def do_or_fake_filter( value, formatter ):
+def do_or_fake_filter(value, formatter):
     """
     call a faker if value is None
     uses:
@@ -118,12 +124,12 @@ def do_or_fake_filter( value, formatter ):
 
     """
     if not value:
-        value = Faker.getGenerator().format( formatter )
+        value = DjangoFaker.get_generator().format(formatter)
     return value
 
 
 @register.filter
-def get_range( value ):
+def get_range(value):
     """
         http://djangosnippets.org/snippets/1357/
 
@@ -143,4 +149,4 @@ def get_range( value ):
 
       Instead of 3 one may use the variable set in the views
     """
-    return range( value )
+    return range(value)

@@ -1,42 +1,43 @@
 #!/usr/bin/env python
-import sys
+import argparse
+import os, sys
 
-from django.conf import settings
+os.environ['DJANGO_SETTINGS_MODULE'] = 'django_faker_tests.settings'
 
-def configure():
-
-    from faker import Faker
-
-    fake = Faker()
-
-    settings.configure(
-        DATABASES={
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': ':memory:',
-                }
-        },
-        INSTALLED_APPS=(
-            'django_faker',
-            ),
-        SITE_ID=1,
-        SECRET_KEY=fake.sha1(),
-    )
-
-if not settings.configured: configure()
+# Adding current directory to ``sys.path``.
+parent = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, parent)
 
 
-from django.test.utils import get_runner
+def runtests(*argv):
+    argv = list(argv) or [
+        'django_faker_tests',
+    ]
+    opts = argparser.parse_args(argv)
+
+    # test_coverage = None
+    # if opts.coverage:
+    #     from coverage import coverage
+    #     test_coverage = coverage(
+    #         branch=True,
+    #         source=['django_faker'])
+    #     test_coverage.start()
+
+    # Run tests.
+    from django.core.management import execute_from_command_line
+    execute_from_command_line([sys.argv[0], 'test'] + opts.appname)
+    #
+    # if opts.coverage:
+    #     test_coverage.stop()
+    #
+    #     # Report coverage to commandline.
+    #     test_coverage.report(file=sys.stdout)
 
 
-def runtests():
-    TestRunner = get_runner(settings)
-    test_runner = TestRunner(verbosity=1, interactive=True, failfast=False)
-    failures = test_runner.run_tests(['django_faker', ])
-    sys.exit(failures)
-
+argparser = argparse.ArgumentParser(description='Process some integers.')
+argparser.add_argument('appname', nargs='*')
+argparser.add_argument('--no-coverage', dest='coverage', action='store_const',
+                       const=False, default=True, help='Do not collect coverage data.')
 
 if __name__ == '__main__':
-    runtests()
-
-
+    runtests(*sys.argv[1:])
