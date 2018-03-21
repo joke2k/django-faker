@@ -75,8 +75,7 @@ Faker is smart enough to relate the populated `Player` entities to one of popula
 
 
 Relational Fields
-------------------------
-
+~~~~~~~~~~~~~~~~~
 Django-faker will attempt to populate relational fields in the following manner:
 1. From model instances added through `add_entity()`
 2. From pre-existing values in the db
