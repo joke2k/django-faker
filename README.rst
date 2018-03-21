@@ -77,21 +77,22 @@ Faker is smart enough to relate the populated `Player` entities to one of popula
 Relational Fields
 ~~~~~~~~~~~~~~~~~
 Django-faker will attempt to populate relational fields in the following manner:
-1. From model instances added through `add_entity()`
-2. From pre-existing values in the db
 
-If there aren't available values and the field can't be null, an `AttributeError` is thrown
+#. From model instances added through `add_entity()`
+#. From pre-existing values in the db
 
-**One-to-one fields**
-The Populator keeps track of what values have been used already so it doesn't violate the one-to-one constraint
+If there aren't available values and the field can't be null, an `AttributeError` is thrown.
 
-**Many-to-many fields**
-The Populator randomly selects between 1-n values to assign to the object
+**One-to-one fields**:
+The Populator keeps track of what values have been used already so it doesn't violate the one-to-one constraint.
 
-**Foreign key fields**
-The Populator randomly selects 1 value to assign
+**Many-to-many fields**:
+The Populator randomly selects between 1-n values to assign to the object.
 
-**unique/unique_together constraints**
+**Foreign key fields**:
+The Populator randomly selects 1 value to assign.
+
+**unique/unique_together constraints**:
 Currently, django-faker tries to populate the field(s) and then if a constraint is violated it tries again.
 This happens up to 1000 times and then an InvalidConstraint exception is thrown.
 Future iterations will hopefully pick values from a generated set of options to guarantee correctness.
