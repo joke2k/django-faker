@@ -1,3 +1,5 @@
+# coding=utf-8
+# coding=UTF-8
 # Credit for constraints goes to django-autofixture:
 # https://github.com/gregmuellegger/django-autofixture/blob/master/autofixture/constraints.py
 # Copyright (c) 2010, Gregor Müllegger

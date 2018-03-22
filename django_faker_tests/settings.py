@@ -43,8 +43,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
 
-    'django_faker',
-    'django_faker_tests',
+    'django_faker',  # get the template tags
+    'django_faker_tests',  # get the models, urls, etc
     'django_faker_tests.tests',
 )
 
@@ -53,9 +53,7 @@ MIDDLEWARE_CLASSES = ()
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # 'APP_DIRS': True, # can't use both APP_DIRS and loaders
         'OPTIONS': {
-            # 1.8 version - django.template.context_processors
             'context_processors': ("django.contrib.auth.context_processors.auth",
                                    "django.template.context_processors.debug",
                                    "django.template.context_processors.i18n",

@@ -21,6 +21,7 @@ In django application `settings.py`::
     INSTALLED_APPS = (
         # ...
         'django_faker',
+        'django_faker_tests',
     )
 
     FAKER_LOCALE = None     # settings.LANGUAGE_CODE is loaded
@@ -38,7 +39,7 @@ call `execute()` method.
 Here is an example showing how to populate 5 `Game` and 10 `Player` objects::
 
     from django_faker import Faker
-    # this Populator is only a function thats return a django_faker.populator.Populator instance
+    # this Populator is only a function that returns a django_faker.populator.Populator instance
     # correctly initialized with a faker.generator.Generator instance, configured as above
     populator = Faker.get_populator()
 
@@ -50,7 +51,7 @@ Here is an example showing how to populate 5 `Game` and 10 `Player` objects::
 
 The populator uses name and column type guessers to populate each column with relevant data.
 For instance, Django-faker populates a column named `first_name` using the `first_name` formatter, and a column with
-a `datetime` instance using the `date_time`.
+a `datetime` instance using `date_time`.
 The resulting entities are therefore coherent. If Django-faker misinterprets a column name, you can still specify a custom
 function to be used for populating a particular column, using the third argument to `add_entity()`::
 
@@ -74,7 +75,7 @@ In the previous example, the `Player` and `Game` models share a relationship. Si
 Faker is smart enough to relate the populated `Player` entities to one of populated `Game` entities.
 
 
-Relational Fields
+More on Relational Fields
 ~~~~~~~~~~~~~~~~~
 Django-faker will attempt to populate relational fields in the following manner:
 
@@ -101,7 +102,7 @@ Future iterations will hopefully pick values from a generated set of options to 
 Template tags and filter
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Django-faker offers a useful template tags and filters for interact with `PyFaker`_::
+Django-faker offers a useful template tags and filters to interact with `faker`_::
 
     {% fake 'name' as myname %}{% fake 'date_time_between' '-10d' as mydate %}
 
@@ -152,7 +153,7 @@ Open `url.py` in your main application and add this url::
 
     urlpatterns = patterns('',
         ...
-        url(r'', include('django_faker.urls')),
+        url(r'', include('django_faker_tests.urls')),
         ...
     )
 

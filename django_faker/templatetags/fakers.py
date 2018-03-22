@@ -7,57 +7,57 @@ register = template.Library()
 
 from django_faker import DjangoFaker
 
+# *** Django allows for optional assignment out of box now with simple tags now ***
+# def optional_assignment_tag(func=None, takes_context=None, name=None):
+#     """
+#     https://groups.google.com/forum/?fromgroups=#!topic/django-developers/E0XWFrkRMGc
+#     new template tags type
+#     """
+#     def dec(func):
+#         params, varargs, varkw, defaults = getargspec(func)
+#
+#         class AssignmentNode(template.Node):
+#             def __init__(self, takes_context, args, kwargs, target_var=None):
+#                 super(AssignmentNode, self).__init__(takes_context, args, kwargs)
+#                 self.target_var = target_var
+#
+#             def render(self, context):
+#                 resolved_args, resolved_kwargs = self.get_resolved_arguments(context)
+#                 output = func(*resolved_args, **resolved_kwargs)
+#                 if self.target_var is None:
+#                     return output
+#                 else:
+#                     context[self.target_var] = output
+#                 return ''
+#
+#         function_name = (name or
+#                          getattr(func, '_decorated_function', func).__name__)
+#
+#         def compile_func(parser, token):
+#             bits = token.split_contents()[1:]
+#             if len(bits) < 2 or bits[-2] != 'as':
+#                 target_var = None
+#             else:
+#                 target_var = bits[-1]
+#                 bits = bits[:-2]
+#             args, kwargs = parse_bits(parser, bits, params,
+#                 varargs, varkw, defaults, takes_context, function_name)
+#             return AssignmentNode(takes_context, args, kwargs, target_var)
+#
+#         compile_func.__doc__ = func.__doc__
+#         register.tag(function_name, compile_func)
+#         return func
+#     if func is None:
+#         # @register.assignment_tag(...)
+#         return dec
+#     elif callable(func):
+#         # @register.assignment_tag
+#         return dec(func)
+#     else:
+#         raise TemplateSyntaxError("Invalid arguments provided to assignment_tag")
 
-def optional_assignment_tag(func=None, takes_context=None, name=None):
-    """
-    https://groups.google.com/forum/?fromgroups=#!topic/django-developers/E0XWFrkRMGc
-    new template tags type
-    """
-    def dec(func):
-        params, varargs, varkw, defaults = getargspec(func)
 
-        class AssignmentNode(template.Node):
-            def __init__(self, takes_context, args, kwargs, target_var=None):
-                super(AssignmentNode, self).__init__(takes_context, args, kwargs)
-                self.target_var = target_var
-
-            def render(self, context):
-                resolved_args, resolved_kwargs = self.get_resolved_arguments(context)
-                output = func(*resolved_args, **resolved_kwargs)
-                if self.target_var is None:
-                    return output
-                else:
-                    context[self.target_var] = output
-                return ''
-
-        function_name = (name or
-                         getattr(func, '_decorated_function', func).__name__)
-
-        def compile_func(parser, token):
-            bits = token.split_contents()[1:]
-            if len(bits) < 2 or bits[-2] != 'as':
-                target_var = None
-            else:
-                target_var = bits[-1]
-                bits = bits[:-2]
-            args, kwargs = parse_bits(parser, bits, params,
-                varargs, varkw, defaults, takes_context, function_name)
-            return AssignmentNode(takes_context, args, kwargs, target_var)
-
-        compile_func.__doc__ = func.__doc__
-        register.tag(function_name, compile_func)
-        return func
-    if func is None:
-        # @register.assignment_tag(...)
-        return dec
-    elif callable(func):
-        # @register.assignment_tag
-        return dec(func)
-    else:
-        raise TemplateSyntaxError("Invalid arguments provided to assignment_tag")
-
-
-@optional_assignment_tag(name='fake')
+@register.simple_tag(name='fake')
 def do_fake(formatter, *args, **kwargs):
     """
         call a faker format
@@ -70,18 +70,6 @@ def do_fake(formatter, *args, **kwargs):
             {% fake 'name' %}
 
         """
-    return DjangoFaker.get_generator().format(formatter, *args, **kwargs)
-
-
-@register.assignment_tag(name='fake')
-def fake_tag_as(formatter, *args, **kwargs):
-    """
-    call a faker format
-    uses:
-
-        {% fake "formatterName" *args **kwargs as myvar %}
-
-    """
     return DjangoFaker.get_generator().format(formatter, *args, **kwargs)
 
 
