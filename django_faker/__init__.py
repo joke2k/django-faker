@@ -1,8 +1,6 @@
 """
 Django-faker uses a generator (eg faker) to generate test data for Django models and templates.
 """
-from faker import Faker as FakerGenerator
-from .populator import Populator
 
 __version__ = "0.2.1"
 
@@ -51,6 +49,7 @@ class DjangoFaker(object):
         if codename not in cls.generators:
             # initialize with faker.generator.Generator instance
             # and remember in cache
+            from faker import Faker as FakerGenerator
             cls.generators[codename] = FakerGenerator(locale, providers)
             cls.generators[codename].seed(cls.generators[codename].random_int())
 
@@ -83,6 +82,7 @@ class DjangoFaker(object):
         if codename not in cls.populators:
             generator = cls.generators.get(codename, None) or cls.get_generator(codename=codename)
 
+            from .populator import Populator
             cls.populators[codename] = Populator(generator)
 
         return cls.populators[codename]
