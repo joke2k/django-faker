@@ -15,23 +15,26 @@ def runtests(*argv):
     ]
     opts = argparser.parse_args(argv)
 
-    # test_coverage = None
-    # if opts.coverage:
-    #     from coverage import coverage
-    #     test_coverage = coverage(
-    #         branch=True,
-    #         source=['django_faker'])
-    #     test_coverage.start()
+    test_coverage = None
+    if opts.coverage:
+        from coverage import coverage
+        test_coverage = coverage(
+            branch=True,
+            source=['django_faker'])
+        test_coverage.start()
 
     # Run tests.
     from django.core.management import execute_from_command_line
-    execute_from_command_line([sys.argv[0], 'test'] + opts.appname)
-    #
-    # if opts.coverage:
-    #     test_coverage.stop()
-    #
-    #     # Report coverage to commandline.
-    #     test_coverage.report(file=sys.stdout)
+    failures = execute_from_command_line([sys.argv[0], 'test'] + opts.appname)
+    if failures:
+        sys.exit(failures)
+
+    if opts.coverage:
+        test_coverage.stop()
+
+        # Report coverage to commandline.
+        test_coverage.report(file=sys.stdout)
+        sys.exit()
 
 
 argparser = argparse.ArgumentParser(description='Process some integers.')

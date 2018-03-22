@@ -82,7 +82,7 @@ def fake_tag_str(formatter, *args, **kwargs):
         {% fakestr "formatterName" *values **kwargs %}
     """
     if formatter == 'dateTimeThisCentury':
-        print args, kwargs
+        print(args, kwargs)
     return DjangoFaker.get_generator().format(formatter, *args, **kwargs)
 
 
