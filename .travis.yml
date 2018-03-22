@@ -11,9 +11,7 @@ env:
    - DJANGO=Django==2.0
 install:
  - pip install $DJANGO
- - pip install faker
- - pip install .
- - pip install coverage
+ - pip install -e .
 branches:
  only:
   - master
