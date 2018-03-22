@@ -34,7 +34,7 @@ class TemplateTagsTestCase(test.TestCase):
     def testFakeFilterWithValueFromContext(self):
         mylist = [100, 200, 300]
         rendered = self.render("{{ 'random_element'|fake:mylist }}", {'mylist': mylist})
-        self.assertIn(rendered, [unicode(el) for el in mylist])
+        self.assertIn(rendered, [str(el) for el in mylist])
 
     def testFakeFilterFormatterNotFoundRaisesException(self):
         with self.assertRaises(AttributeError):
