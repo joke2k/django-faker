@@ -2,7 +2,6 @@ language: python
 sudo: false
 python:
  - "2.7"
- - "3.3"
  - "3.4"
 env:
   matrix:
@@ -22,10 +21,6 @@ matrix:
       env: DJANGO=Django==2.0
     - python: "2.7"
       env: DJANGO=Django==2.0
-    - python: "3.3"
-      env: DJANGO=Django==1.11
-    - python: "3.3"
-      env: DJANGO=Django==1.11
     - python: "3.4"
       env: DJANGO=Django==1.11
     - python: "3.4"
