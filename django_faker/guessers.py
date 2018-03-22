@@ -5,7 +5,7 @@ from django.db.models import ForeignKey, ManyToManyField, OneToOneField, ImageFi
     PositiveSmallIntegerField, BigIntegerField, SmallIntegerField, PositiveIntegerField, IntegerField, DecimalField, \
     FloatField, SlugField, URLField, EmailField, TextField, UUIDField, CharField, BinaryField, BooleanField, \
     NullBooleanField, DateField, DateTimeField, DurationField, TimeField, FilePathField, GenericIPAddressField
-from constraints import InvalidConstraint
+from .constraints import InvalidConstraint
 
 
 class FieldGuesser(object):
