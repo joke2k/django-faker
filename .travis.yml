@@ -10,8 +10,8 @@ env:
    - DJANGO=Django==1.11
    - DJANGO=Django==2.0
 install:
- - pip install $DJANGO --use-mirrors
- - pip install . --use-mirrors
+ - pip install $DJANGO
+ - pip install .
  - pip install coverage
 branches:
  only:
