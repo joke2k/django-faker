@@ -4,6 +4,8 @@ Django-faker uses a generator (eg faker) to generate test data for Django models
 from faker import Faker as FakerGenerator
 from .populator import Populator
 
+__version__ = "0.2.1"
+
 
 class DjangoFaker(object):
 
