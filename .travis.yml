@@ -1,41 +1,24 @@
 language: python
 sudo: false
 python:
- - "2.6"
  - "2.7"
- - "3.3"
  - "3.4"
 env:
   matrix:
-   - DJANGO=Django==1.4
-   - DJANGO=Django==1.5
-   - DJANGO=Django==1.6
-   - DJANGO=Django==1.7
-   - DJANGO=Django==1.8
+   - DJANGO=Django==1.11
+   - DJANGO=Django==2.0
 install:
- - pip install $DJANGO --use-mirrors
- - pip install . --use-mirrors
- - pip install coverage
+ - pip install $DJANGO
+ - pip install -e .
 branches:
  only:
   - master
   - develop
-script: coverage run --source=django_faker setup.py test
+script: python setup.py test
 matrix:
   exclude:
-    - python: "2.6"
-      env: DJANGO=Django==1.7
-    - python: "2.6"
-      env: DJANGO=Django==1.8
-    - python: "3.3"
-      env: DJANGO=Django==1.4
-    - python: "3.3"
-      env: DJANGO=Django==1.5
-    - python: "3.4"
-      env: DJANGO=Django==1.4
-    - python: "3.4"
-      env: DJANGO=Django==1.5
+    - python: "2.7"
+      env: DJANGO=Django==2.0
 after_success:
-  - coverage report
   - pip install --quiet python-coveralls
   - coveralls

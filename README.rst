@@ -1,7 +1,7 @@
 Django-faker
 ============
 
-*Django-faker* uses `fake-factory`_ package to generate test data for Django models and templates.
+*Django-faker* uses `faker`_ package to generate test data for Django models and templates.
 
 |pypi| |unix_build| |windows_build| |coverage| |downloads| |license|
 
@@ -19,9 +19,9 @@ Configuration
 In django application `settings.py`::
 
     INSTALLED_APPS = (
-
         # ...
         'django_faker',
+        'django_faker_tests',
     )
 
     FAKER_LOCALE = None     # settings.LANGUAGE_CODE is loaded
@@ -39,25 +39,25 @@ call `execute()` method.
 Here is an example showing how to populate 5 `Game` and 10 `Player` objects::
 
     from django_faker import Faker
-    # this Populator is only a function thats return a django_faker.populator.Populator instance
+    # this Populator is only a function that returns a django_faker.populator.Populator instance
     # correctly initialized with a faker.generator.Generator instance, configured as above
-    populator = Faker.getPopulator()
+    populator = Faker.get_populator()
 
     from myapp.models import Game, Player
-    populator.addEntity(Game,5)
-    populator.addEntity(Player,10)
+    populator.add_entity(Game,5)
+    populator.add_entity(Player,10)
 
     insertedPks = populator.execute()
 
 The populator uses name and column type guessers to populate each column with relevant data.
-For instance, Django-faker populates a column named `first_name` using the `firstName` formatter, and a column with
-a `datetime` instance using the `dateTime`.
+For instance, Django-faker populates a column named `first_name` using the `first_name` formatter, and a column with
+a `datetime` instance using `date_time`.
 The resulting entities are therefore coherent. If Django-faker misinterprets a column name, you can still specify a custom
-function to be used for populating a particular column, using the third argument to `addEntity()`::
+function to be used for populating a particular column, using the third argument to `add_entity()`::
 
 
-    populator.addEntity(Player, 10, {
-        'score':    lambda x: populator.generator.randomInt(0,1000),
+    populator.add_entity(Player, 10, {
+        'score':    lambda x: populator.generator.random_int(0,1000),
         'nickname': lambda x: populator.generator.email(),
     })
     populator.execute()
@@ -75,12 +75,36 @@ In the previous example, the `Player` and `Game` models share a relationship. Si
 Faker is smart enough to relate the populated `Player` entities to one of populated `Game` entities.
 
 
+More on Relational Fields
+~~~~~~~~~~~~~~~~~
+Django-faker will attempt to populate relational fields in the following manner:
+
+#. From model instances added through `add_entity()`
+#. From pre-existing values in the db
+
+If there aren't available values and the field can't be null, an `AttributeError` is thrown.
+
+**One-to-one fields**:
+The Populator keeps track of what values have been used already so it doesn't violate the one-to-one constraint.
+
+**Many-to-many fields**:
+The Populator randomly selects between 1-n values to assign to the object.
+
+**Foreign key fields**:
+The Populator randomly selects 1 value to assign.
+
+**unique/unique_together constraints**:
+Currently, django-faker tries to populate the field(s) and then if a constraint is violated it tries again.
+This happens up to 1000 times and then an InvalidConstraint exception is thrown.
+Future iterations will hopefully pick values from a generated set of options to guarantee correctness.
+
+
 Template tags and filter
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Django-faker offers a useful template tags and filters for interact with `PyFaker`_::
+Django-faker offers a useful template tags and filters to interact with `faker`_::
 
-    {% fake 'name' as myname %}{% fake 'dateTimeBetween' '-10d' as mydate %}
+    {% fake 'name' as myname %}{% fake 'date_time_between' '-10d' as mydate %}
 
     {{ myname|title }} - {{ mydate|date:"M Y" }}
 
@@ -90,20 +114,20 @@ Django-faker offers a useful template tags and filters for interact with `PyFake
 
     <?xml version="1.0" encoding="UTF-8"?>
     <contacts>
-        {% fake 'randomInt' 10 20 as times %}
+        {% fake 'random_int' 10 20 as times %}
         {% for i in 10|get_range %}
-        <contact firstName="{% fakestr 'firstName' %}" lastName="{% fakestr 'lastName' %}" email="{% fakestr 'email' %}"/>
-            <phone number="{% fakestr 'phoneNumber' %}"/>
+        <contact first_name="{% fakestr 'first_name' %}" last_name="{% fakestr 'last_name' %}" email="{% fakestr 'email' %}"/>
+            <phone number="{% fakestr 'phone_number' %}"/>
             {% if 'boolean'|fake:25 %}
-            <birth date="{{ 'dateTimeThisCentury'|fake|date:"D d M Y" }}" place="{% fakestr 'city' %}"/>
+            <birth date="{{ 'date_time_this_century'|fake|date:"D d M Y" }}" place="{% fakestr 'city' %}"/>
             {% endif %}
             <address>
-                <street>{% fakestr 'streetAddress' %}</street>
+                <street>{% fakestr 'street_address' %}</street>
                 <city>{% fakestr 'city' %}</city>
                 <postcode>{% fakestr 'postcode' %}</postcode>
                 <state>{% fakestr 'state' %}</state>
             </address>
-            <company name="{% fakestr 'company' %}" catchPhrase="{% fakestr 'catchPhrase' %}">
+            <company name="{% fakestr 'company' %}" catch_phrase="{% fakestr 'catch_phrase' %}">
             {% if 'boolean'|fake:25 %}
                 <offer>{% fakestr 'bs' %}</offer>
             {% endif %}
@@ -129,7 +153,7 @@ Open `url.py` in your main application and add this url::
 
     urlpatterns = patterns('',
         ...
-        url(r'', include('django_faker.urls')),
+        url(r'', include('django_faker_tests.urls')),
         ...
     )
 
@@ -168,7 +192,7 @@ Changelog
 - Add django template tag and filter
 
 
-.. _fake-factory: https://www.github.com/joke2k/faker/
+.. _faker: https://www.github.com/joke2k/faker/
 
 .. |pypi| image:: https://img.shields.io/pypi/v/django-faker.svg?style=flat-square&label=version
     :target: https://pypi.python.org/pypi/django-faker

@@ -1,2 +1,3 @@
 django
-fake-factory==0.5.3
+faker
+coverage
