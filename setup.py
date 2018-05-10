@@ -14,7 +14,7 @@ def read_file(filename):
 
 setup(
     name='django-faker',
-    version=__import__('django_faker').__version__,
+    version=__import__('django_faker.version').__version__,
     author='joke2k',
     author_email='joke2k@gmail.com',
     packages=find_packages(),

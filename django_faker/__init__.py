@@ -3,11 +3,6 @@
 Django-faker uses python-faker to generate test data for Django models and templates.
 
 """
-
-
-
-__version__ = '0.2.1'
-
 class Faker(object):
 
     instance = None
@@ -32,9 +27,9 @@ class Faker(object):
         """
         from django.conf import settings
         # language
-        locale = locale or getattr(settings,'FAKER_LOCALE', getattr(settings,'LANGUAGE_CODE', None))
+        locale = locale or getattr(settings, 'FAKER_LOCALE', getattr(settings, 'LANGUAGE_CODE', None))
         # providers
-        providers = providers or getattr(settings,'FAKER_PROVIDERS', None)
+        providers = providers or getattr(settings, 'FAKER_PROVIDERS', None)
 
         codename = locale or 'default'
 
@@ -102,9 +97,9 @@ class Faker(object):
 #            # initialize with faker.generator.Generator instance
 #            FakerGenerator(
 #
-#                getattr(settings,'FAKER_LOCALE', getattr(settings,'LANGUAGE_CODE', locale)),
+#                getattr(settings, 'FAKER_LOCALE', getattr(settings, 'LANGUAGE_CODE', locale)),
 #
-#                getattr(settings,'FAKER_PROVIDERS', providers)
+#                getattr(settings, 'FAKER_PROVIDERS', providers)
 #            )
 #        )
 
