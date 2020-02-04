@@ -16,7 +16,9 @@ To install Django-faker you can use pip::
 Configuration
 ~~~~~~~~~~~~~
 
-In django application `settings.py`::
+In django application `settings.py`:
+
+  .. code:: python
 
     INSTALLED_APPS = (
 
@@ -36,7 +38,9 @@ To populate with Model instances, create a new Populator class,
 then list the class and number of all of Models that must be generated. To launch the actual data population,
 call `execute()` method.
 
-Here is an example showing how to populate 5 `Game` and 10 `Player` objects::
+Here is an example showing how to populate 5 `Game` and 10 `Player` objects:
+
+  .. code:: python
 
     from django_faker import Faker
     # this Populator is only a function thats return a django_faker.populator.Populator instance
@@ -53,8 +57,9 @@ The populator uses name and column type guessers to populate each column with re
 For instance, Django-faker populates a column named `first_name` using the `firstName` formatter, and a column with
 a `datetime` instance using the `dateTime`.
 The resulting entities are therefore coherent. If Django-faker misinterprets a column name, you can still specify a custom
-function to be used for populating a particular column, using the third argument to `addEntity()`::
+function to be used for populating a particular column, using the third argument to `addEntity()`:
 
+  .. code:: python
 
     populator.addEntity(Player, 10, {
         'score':    lambda x: populator.generator.randomInt(0,1000),
@@ -63,7 +68,9 @@ function to be used for populating a particular column, using the third argument
     populator.execute()
 
 Of course, Django-faker does not populate autoincremented primary keys.
-In addition, `django_faker.populator.Populator.execute()` returns the list of inserted PKs, indexed by class::
+In addition, `django_faker.populator.Populator.execute()` returns the list of inserted PKs, indexed by class:
+
+  .. code:: python
 
     print insertedPks
     {
@@ -78,7 +85,9 @@ Faker is smart enough to relate the populated `Player` entities to one of popula
 Template tags and filter
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Django-faker offers a useful template tags and filters for interact with `PyFaker`_::
+Django-faker offers a useful template tags and filters for interact with `PyFaker`_:
+
+  .. code:: jinja
 
     {% fake 'name' as myname %}{% fake 'dateTimeBetween' '-10d' as mydate %}
 
@@ -125,7 +134,9 @@ Django-faker offers a useful template tags and filters for interact with `PyFake
 
 Page preview
 ~~~~~~~~~~~~
-Open `url.py` in your main application and add this url::
+Open `url.py` in your main application and add this url:
+
+  .. code:: python
 
     urlpatterns = patterns('',
         ...
