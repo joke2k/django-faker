@@ -1,7 +1,7 @@
 Django-faker
 ============
 
-*Django-faker* uses `fake-factory`_ package to generate test data for Django models and templates.
+*Django-faker* uses the `Faker`_ package to generate test data for Django models and templates.
 
 |pypi| |unix_build| |windows_build| |coverage| |downloads| |license|
 
@@ -153,7 +153,7 @@ Changelog
 `0.3dev <http://github.com/joke2k/django-faker/compare/v0.2...master>`__
 ------------------------------------------------------------------------
 
-- Upgrade fake-factory version
+- fake-factory package was renamed to Faker, requires a minimum version of 0.7.3
 
 `0.2 - 23-January-2013 <http://github.com/joke2k/django-faker/compare/v0.1...v0.2>`__
 -------------------------------------------------------------------------------------
@@ -168,7 +168,7 @@ Changelog
 - Add django template tag and filter
 
 
-.. _fake-factory: https://www.github.com/joke2k/faker/
+.. _Faker: https://www.github.com/joke2k/faker/
 
 .. |pypi| image:: https://img.shields.io/pypi/v/django-faker.svg?style=flat-square&label=version
     :target: https://pypi.python.org/pypi/django-faker
