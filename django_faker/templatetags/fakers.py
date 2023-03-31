@@ -1,6 +1,7 @@
 from inspect import getargspec
 from django import template
-from django.template.base import TagHelperNode, TemplateSyntaxError, parse_bits
+from django.template.library import TagHelperNode, parse_bits
+from django.template.exceptions import TemplateSyntaxError
 
 register = template.Library()
 
